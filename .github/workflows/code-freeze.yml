@@ -1,0 +1,19 @@
+name: Enforce Code Freeze
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  code-freeze-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Code Freeze Period
+        run: |
+          if [[ "$(date +%Y-%m-%d)" > "2024-11-20" && "$(date +%Y-%m-%d)" < "2024-12-01" ]]; then
+            echo "Code freeze in effect. No changes allowed."
+            exit 1
+          fi
