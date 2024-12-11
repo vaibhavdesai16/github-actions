@@ -15,35 +15,26 @@ To use this GitHub Action, add it to your repository's workflow file (e.g., `.gi
 ### Example Workflow File
 
 ```yaml
-name: Code Freeze PR Blocker
+name: Enforce Code Freeze
 
 on:
   pull_request:
-    types: [opened, edited, synchronize]
+    types: [opened, edited, reopened]
+  push:
+    branches:
+      - main
 
 jobs:
-  block-prs:
+  code-freeze-check:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Block PRs during code freeze
-      uses: ./.github/actions/block-prs
-      with:
-        start-date: "2024-12-20"
-        end-date: "2025-01-05"
-        timezone: "UTC"
+      - name: Check Code Freeze Period
+        run: |
+          if [[ "$(date +%Y-%m-%d)" > "2024-11-22" && "$(date +%Y-%m-%d)" < "2024-12-01" ]]; then
+            echo "Code freeze in effect. No changes allowed."
+            exit 1
+          fi
 ```
-
-### Inputs
-
-| Name         | Description                                                | Required | Default      |
-|--------------|------------------------------------------------------------|----------|--------------|
-| `start-date` | Start date of the code freeze in `YYYY-MM-DD` format.       | Yes      | N/A          |
-| `end-date`   | End date of the code freeze in `YYYY-MM-DD` format.         | Yes      | N/A          |
-| `timezone`   | Timezone for the freeze period (e.g., `UTC`, `America/NY`). | No       | `UTC`        |
 
 ### Outputs
 
